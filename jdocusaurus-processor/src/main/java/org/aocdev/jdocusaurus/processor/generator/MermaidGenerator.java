@@ -187,6 +187,48 @@ public class MermaidGenerator {
         return md.toString();
     }
 
+    public String generateEventFlowDiagram(List<EventModel> events) {
+        if (events == null || events.isEmpty()) return null;
+
+        StringBuilder md = new StringBuilder();
+        md.append("```mermaid\ngraph LR\n");
+
+        Set<String> declaredNodes = new LinkedHashSet<>();
+
+        for (EventModel event : events) {
+            String eventId = sanitizeId(event.getDisplayName());
+            if (!declaredNodes.contains(eventId)) {
+                md.append("    ").append(eventId).append("([\"").append(event.getDisplayName()).append("\"])\n");
+                declaredNodes.add(eventId);
+            }
+
+            for (ProducerModel producer : event.getProducers()) {
+                String producerId = sanitizeId(producer.getClassName());
+                if (!declaredNodes.contains(producerId)) {
+                    md.append("    ").append(producerId).append("[\"").append(producer.getClassName()).append("\"]\n");
+                    declaredNodes.add(producerId);
+                }
+                md.append("    ").append(producerId).append(" -->|produce| ").append(eventId).append("\n");
+            }
+
+            for (ConsumerModel consumer : event.getConsumers()) {
+                String consumerId = sanitizeId(consumer.getClassName());
+                if (!declaredNodes.contains(consumerId)) {
+                    md.append("    ").append(consumerId).append("[\"").append(consumer.getClassName()).append("\"]\n");
+                    declaredNodes.add(consumerId);
+                }
+                md.append("    ").append(eventId).append(" -->|consume| ").append(consumerId).append("\n");
+            }
+        }
+
+        md.append("```\n");
+        return md.toString();
+    }
+
+    private String sanitizeId(String name) {
+        return name.replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
     private Map<String, String> buildAliasMap(List<ParticipantModel> participants) {
         Map<String, String> map = new HashMap<>();
         if (participants != null) {
