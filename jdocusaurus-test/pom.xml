@@ -31,4 +31,21 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Ajdoc.projectName=User Service</arg>
+                        <arg>-Ajdoc.projectDescription=Microservicio de gestion de usuarios</arg>
+                        <arg>-Ajdoc.fullStructure=true</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
