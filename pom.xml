@@ -11,6 +11,23 @@
 
     <name>JDocusaurus</name>
     <description>Libreria de documentacion profunda de microservicios para Docusaurus</description>
+    <url>https://github.com/aocdev/jdocusaurus</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>aortellsc</id>
+            <name>Albert Ortells</name>
+            <organization>aocdev</organization>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
