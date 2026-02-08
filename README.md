@@ -17,7 +17,7 @@ Annotate your code with `@JDoc*` and automatically get: Markdown pages with endp
 ## Requirements
 
 - Java 21+
-- Maven 3.8+
+- Maven 3.8+ (included via [Maven Wrapper](https://maven.apache.org/wrapper/) — no installation needed)
 
 ## Installation
 
@@ -98,7 +98,7 @@ public class UserController {
 ### 2. Compile
 
 ```bash
-mvn clean compile
+./mvnw clean compile
 ```
 
 ### 3. Result
@@ -404,7 +404,7 @@ JDocusaurus/
 ## Build
 
 ```bash
-mvn clean compile
+./mvnw clean compile
 ```
 
 Documentation is automatically generated during compilation of the module using the annotations. Output goes to `target/classes/docs/` (or to the absolute path if `jdoc.outputDir` is configured).

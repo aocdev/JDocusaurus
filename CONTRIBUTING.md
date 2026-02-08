@@ -36,15 +36,16 @@ We welcome pull requests for bug fixes, new annotations, generators, and documen
 ### Prerequisites
 
 - **Java 21+** (LTS, compilation target is 21)
-- **Maven 3.8+**
 - **Git**
+
+Maven is **not** required to be installed. The project includes the [Maven Wrapper](https://maven.apache.org/wrapper/) (`mvnw`), which automatically downloads the correct Maven version (3.8.8).
 
 ### Building the Project
 
 ```bash
 git clone https://github.com/aocdev/jdocusaurus.git
 cd jdocusaurus
-mvn clean verify
+./mvnw clean verify
 ```
 
 The project is a multi-module Maven build:
@@ -60,10 +61,10 @@ jdocusaurus/
 
 ```bash
 # Full build with verification
-mvn clean verify
+./mvnw clean verify
 
 # Only compile (runs annotation processing on test module)
-mvn clean compile
+./mvnw clean compile
 ```
 
 A successful build shows:
@@ -196,7 +197,7 @@ The version is derived from Conventional Commits:
 1. **Create an issue first** for non-trivial changes (new annotations, generators, etc.)
 2. **Branch from `main`**: `git checkout -b feat/my-feature main`
 3. **Follow commit conventions** described above
-4. **Ensure the build passes**: `mvn clean verify`
+4. **Ensure the build passes**: `./mvnw clean verify`
 5. **Add/update tests** if applicable (annotated example classes in `jdocusaurus-test`)
 6. **Update documentation** if you add new annotations or options
 
