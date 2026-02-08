@@ -22,4 +22,10 @@ public class ProjectModel {
     public List<ParticipantModel> getAllParticipants() { return allParticipants; }
     public void setAllParticipants(List<ParticipantModel> allParticipants) { this.allParticipants = allParticipants; }
     public void addParticipant(ParticipantModel participant) { this.allParticipants.add(participant); }
+
+    private List<EntityModel> entities = new ArrayList<>();
+
+    public List<EntityModel> getEntities() { return entities; }
+    public void setEntities(List<EntityModel> entities) { this.entities = entities; }
+    public void addEntity(EntityModel entity) { this.entities.add(entity); }
 }

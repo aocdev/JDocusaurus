@@ -1,6 +1,7 @@
 package org.aocdev.jdocusaurus.processor.scanner;
 
 import org.aocdev.jdocusaurus.annotations.api.*;
+import org.aocdev.jdocusaurus.annotations.data.*;
 import org.aocdev.jdocusaurus.annotations.flow.*;
 import org.aocdev.jdocusaurus.processor.model.*;
 
@@ -21,6 +22,14 @@ public class AnnotationScanner {
                 TypeElement typeElement = (TypeElement) element;
                 ClassModel classModel = scanClass(typeElement);
                 project.addClass(classModel);
+            }
+        }
+
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocEntity.class)) {
+            if (element.getKind() == ElementKind.CLASS) {
+                TypeElement typeElement = (TypeElement) element;
+                EntityModel entityModel = scanEntity(typeElement);
+                project.addEntity(entityModel);
             }
         }
 
@@ -209,5 +218,62 @@ public class AnnotationScanner {
 
         steps.sort((a, b) -> Integer.compare(a.getOrder(), b.getOrder()));
         return steps;
+    }
+
+    private EntityModel scanEntity(TypeElement typeElement) {
+        JDocEntity annotation = typeElement.getAnnotation(JDocEntity.class);
+
+        EntityModel entity = new EntityModel();
+        entity.setClassName(typeElement.getSimpleName().toString());
+        entity.setName(annotation.name());
+        entity.setDescription(annotation.description());
+        entity.setTableName(annotation.table());
+
+        List<FieldModel> fields = new ArrayList<>();
+        List<RelationModel> relations = new ArrayList<>();
+
+        for (Element enclosed : typeElement.getEnclosedElements()) {
+            if (enclosed.getKind() != ElementKind.FIELD) continue;
+            VariableElement field = (VariableElement) enclosed;
+
+            JDocField fieldAnnotation = field.getAnnotation(JDocField.class);
+            if (fieldAnnotation != null) {
+                FieldModel model = new FieldModel();
+                model.setName(field.getSimpleName().toString());
+                model.setTypeName(simplifyType(field.asType().toString()));
+                model.setDescription(fieldAnnotation.description());
+                model.setExample(fieldAnnotation.example());
+                model.setNullable(fieldAnnotation.nullable());
+                model.setConstraints(fieldAnnotation.constraints());
+                fields.add(model);
+            }
+
+            JDocRelation relationAnnotation = field.getAnnotation(JDocRelation.class);
+            if (relationAnnotation != null) {
+                RelationModel model = new RelationModel();
+                model.setFieldName(field.getSimpleName().toString());
+                String target = relationAnnotation.target();
+                model.setTargetEntityName(target.isEmpty() ? simplifyType(field.asType().toString()) : target);
+                model.setType(relationAnnotation.type().name());
+                model.setDescription(relationAnnotation.description());
+                relations.add(model);
+            }
+        }
+
+        entity.setFields(fields);
+        entity.setRelations(relations);
+        return entity;
+    }
+
+    public TypeElement getTypeElement(Element element) {
+        return (TypeElement) element;
+    }
+
+    private String simplifyType(String fullType) {
+        if (fullType == null || fullType.isEmpty()) return "Object";
+        int genericStart = fullType.indexOf('<');
+        if (genericStart > 0) fullType = fullType.substring(0, genericStart);
+        int lastDot = fullType.lastIndexOf('.');
+        return lastDot >= 0 ? fullType.substring(lastDot + 1) : fullType;
     }
 }

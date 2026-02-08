@@ -153,6 +153,40 @@ public class MermaidGenerator {
         }
     }
 
+    public String generateERDiagram(List<EntityModel> entities) {
+        if (entities == null || entities.isEmpty()) return null;
+
+        StringBuilder md = new StringBuilder();
+        md.append("```mermaid\nerDiagram\n");
+
+        for (EntityModel entity : entities) {
+            String entityName = entity.getDisplayName();
+            md.append("    ").append(entityName).append(" {\n");
+            for (FieldModel field : entity.getFields()) {
+                md.append("        ").append(field.getTypeName()).append(" ").append(field.getName());
+                if (field.isPrimaryKey()) {
+                    md.append(" PK");
+                }
+                md.append("\n");
+            }
+            md.append("    }\n");
+        }
+
+        md.append("\n");
+
+        for (EntityModel entity : entities) {
+            for (RelationModel relation : entity.getRelations()) {
+                md.append("    ").append(entity.getDisplayName())
+                        .append(" ").append(relation.getMermaidRelation()).append(" ")
+                        .append(relation.getTargetEntityName())
+                        .append(" : ").append(relation.getFieldName()).append("\n");
+            }
+        }
+
+        md.append("```\n");
+        return md.toString();
+    }
+
     private Map<String, String> buildAliasMap(List<ParticipantModel> participants) {
         Map<String, String> map = new HashMap<>();
         if (participants != null) {
