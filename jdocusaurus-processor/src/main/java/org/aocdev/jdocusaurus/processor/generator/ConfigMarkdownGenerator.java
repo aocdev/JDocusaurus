@@ -12,12 +12,18 @@ import java.util.List;
 
 public class ConfigMarkdownGenerator implements Generator {
 
+    private final String outputDir;
+
+    public ConfigMarkdownGenerator() { this("docs"); }
+
+    public ConfigMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
+
     @Override
     public void generate(ProjectModel model, Filer filer) throws IOException {
         List<ConfigModel> configs = model.getConfigs();
         if (configs.isEmpty()) return;
 
-        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/config/index.md");
+        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/config/index.md");
         try (Writer writer = file.openWriter()) {
             writer.write(generateConfigIndex(configs));
         }

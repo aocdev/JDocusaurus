@@ -13,12 +13,18 @@ import java.util.stream.Collectors;
 
 public class RuleMarkdownGenerator implements Generator {
 
+    private final String outputDir;
+
+    public RuleMarkdownGenerator() { this("docs"); }
+
+    public RuleMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
+
     @Override
     public void generate(ProjectModel model, Filer filer) throws IOException {
         List<BusinessRuleModel> rules = model.getBusinessRules();
         if (rules.isEmpty()) return;
 
-        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/business-rules/index.md");
+        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/business-rules/index.md");
         try (Writer writer = file.openWriter()) {
             writer.write(generateRulesIndex(rules));
         }

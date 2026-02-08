@@ -14,9 +14,13 @@ public class DependencyMapGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
     private final String serviceName;
+    private final String outputDir;
 
-    public DependencyMapGenerator(String serviceName) {
+    public DependencyMapGenerator(String serviceName) { this(serviceName, "docs"); }
+
+    public DependencyMapGenerator(String serviceName, String outputDir) {
         this.serviceName = serviceName;
+        this.outputDir = outputDir;
     }
 
     @Override
@@ -24,7 +28,7 @@ public class DependencyMapGenerator implements Generator {
         List<ExternalServiceModel> services = model.getExternalServices();
         if (services.isEmpty()) return;
 
-        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/integrations/index.md");
+        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/integrations/index.md");
         try (Writer writer = file.openWriter()) {
             writer.write(generateIntegrationsIndex(services));
         }

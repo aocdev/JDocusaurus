@@ -12,12 +12,17 @@ import java.util.List;
 public class MarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
+    private final String outputDir;
+
+    public MarkdownGenerator() { this("docs"); }
+
+    public MarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
     public void generate(ProjectModel model, Filer filer) throws IOException {
         for (ClassModel classModel : model.getClasses()) {
             String fileName = toKebabCase(classModel.getClassName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/api/" + fileName);
+            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/api/" + fileName);
             try (Writer writer = file.openWriter()) {
                 writer.write(generateClassMarkdown(classModel, model.getAllParticipants()));
             }

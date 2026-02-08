@@ -12,6 +12,11 @@ import java.util.List;
 public class EventMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
+    private final String outputDir;
+
+    public EventMarkdownGenerator() { this("docs"); }
+
+    public EventMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
     public void generate(ProjectModel model, Filer filer) throws IOException {
@@ -19,7 +24,7 @@ public class EventMarkdownGenerator implements Generator {
         if (events.isEmpty()) return;
 
         // Generate index
-        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/events/index.md");
+        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/events/index.md");
         try (Writer writer = indexFile.openWriter()) {
             writer.write(generateIndex(events));
         }
@@ -27,7 +32,7 @@ public class EventMarkdownGenerator implements Generator {
         // Generate individual event pages
         for (EventModel event : events) {
             String fileName = toKebabCase(event.getDisplayName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/events/" + fileName);
+            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/events/" + fileName);
             try (Writer writer = file.openWriter()) {
                 writer.write(generateEventMarkdown(event));
             }

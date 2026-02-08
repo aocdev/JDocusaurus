@@ -12,6 +12,11 @@ import java.util.List;
 public class FlowMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
+    private final String outputDir;
+
+    public FlowMarkdownGenerator() { this("docs"); }
+
+    public FlowMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
     public void generate(ProjectModel model, Filer filer) throws IOException {
@@ -19,7 +24,7 @@ public class FlowMarkdownGenerator implements Generator {
             if (flow.getSteps().isEmpty()) continue;
 
             String fileName = toKebabCase(flow.getName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/flows/" + fileName);
+            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/flows/" + fileName);
             try (Writer writer = file.openWriter()) {
                 writer.write(generateFlowMarkdown(flow, model.getAllParticipants()));
             }

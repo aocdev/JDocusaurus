@@ -12,6 +12,11 @@ import java.util.List;
 public class EntityMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
+    private final String outputDir;
+
+    public EntityMarkdownGenerator() { this("docs"); }
+
+    public EntityMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
     public void generate(ProjectModel model, Filer filer) throws IOException {
@@ -19,7 +24,7 @@ public class EntityMarkdownGenerator implements Generator {
         if (entities.isEmpty()) return;
 
         // Generate index with global ER diagram
-        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/data-model/index.md");
+        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/data-model/index.md");
         try (Writer writer = indexFile.openWriter()) {
             writer.write(generateIndex(entities));
         }
@@ -27,7 +32,7 @@ public class EntityMarkdownGenerator implements Generator {
         // Generate individual entity pages
         for (EntityModel entity : entities) {
             String fileName = toKebabCase(entity.getClassName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", "docs/data-model/" + fileName);
+            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/data-model/" + fileName);
             try (Writer writer = file.openWriter()) {
                 writer.write(generateEntityMarkdown(entity));
             }

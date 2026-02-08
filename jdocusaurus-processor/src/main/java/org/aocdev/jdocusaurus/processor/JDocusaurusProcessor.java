@@ -1,5 +1,6 @@
 package org.aocdev.jdocusaurus.processor;
 
+import org.aocdev.jdocusaurus.processor.config.JDocusaurusConfig;
 import org.aocdev.jdocusaurus.processor.generator.*;
 import org.aocdev.jdocusaurus.processor.model.*;
 import org.aocdev.jdocusaurus.processor.scanner.AnnotationScanner;
@@ -13,7 +14,6 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes({
         "org.aocdev.jdocusaurus.annotations.api.JDocClass",
@@ -41,6 +41,14 @@ import java.util.stream.Collectors;
         "org.aocdev.jdocusaurus.annotations.config.JDocConfig",
         "org.aocdev.jdocusaurus.annotations.config.JDocConfigs"
 })
+@SupportedOptions({
+        "jdoc.outputDir",
+        "jdoc.fullStructure",
+        "jdoc.projectName",
+        "jdoc.projectDescription",
+        "jdoc.autoFlowDepth",
+        "jdoc.autoFlowEnabled"
+})
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class JDocusaurusProcessor extends AbstractProcessor {
 
@@ -51,6 +59,8 @@ public class JDocusaurusProcessor extends AbstractProcessor {
         if (processed || roundEnv.processingOver()) {
             return false;
         }
+
+        JDocusaurusConfig config = JDocusaurusConfig.fromProcessingEnvironment(processingEnv);
 
         AnnotationScanner scanner = new AnnotationScanner();
         ProjectModel model = scanner.scan(roundEnv);
@@ -75,32 +85,31 @@ public class JDocusaurusProcessor extends AbstractProcessor {
         collectFlows(model);
 
         // Run JavaParser auto-detection for call graphs
-        runCallGraphAnalysis(model);
+        if (config.isAutoFlowEnabled()) {
+            runCallGraphAnalysis(model, config.getAutoFlowDepth());
+        }
+
+        String outputDir = config.getOutputDir();
 
         try {
-            MarkdownGenerator markdownGenerator = new MarkdownGenerator();
-            markdownGenerator.generate(model, processingEnv.getFiler());
+            Filer filer = processingEnv.getFiler();
 
-            FlowMarkdownGenerator flowGenerator = new FlowMarkdownGenerator();
-            flowGenerator.generate(model, processingEnv.getFiler());
+            // Content generators
+            new MarkdownGenerator(outputDir).generate(model, filer);
+            new FlowMarkdownGenerator(outputDir).generate(model, filer);
+            new EntityMarkdownGenerator(outputDir).generate(model, filer);
+            new EventMarkdownGenerator(outputDir).generate(model, filer);
+            new RuleMarkdownGenerator(outputDir).generate(model, filer);
 
-            EntityMarkdownGenerator entityGenerator = new EntityMarkdownGenerator();
-            entityGenerator.generate(model, processingEnv.getFiler());
+            String serviceName = config.getProjectName().isEmpty()
+                    ? (model.getClasses().isEmpty() ? "MyService" : model.getClasses().get(0).getName())
+                    : config.getProjectName();
+            new DependencyMapGenerator(serviceName, outputDir).generate(model, filer);
+            new ConfigMarkdownGenerator(outputDir).generate(model, filer);
 
-            EventMarkdownGenerator eventGenerator = new EventMarkdownGenerator();
-            eventGenerator.generate(model, processingEnv.getFiler());
-
-            RuleMarkdownGenerator ruleGenerator = new RuleMarkdownGenerator();
-            ruleGenerator.generate(model, processingEnv.getFiler());
-
-            String serviceName = model.getClasses().isEmpty()
-                    ? "MyService"
-                    : model.getClasses().get(0).getName();
-            DependencyMapGenerator depGenerator = new DependencyMapGenerator(serviceName);
-            depGenerator.generate(model, processingEnv.getFiler());
-
-            ConfigMarkdownGenerator configGenerator = new ConfigMarkdownGenerator();
-            configGenerator.generate(model, processingEnv.getFiler());
+            // Structure generators
+            new IndexGenerator(config).generate(model, filer);
+            new SidebarGenerator(config).generate(model, filer);
 
             int endpointCount = model.getClasses().stream()
                     .mapToInt(c -> c.getEndpoints().size())
@@ -116,7 +125,14 @@ public class JDocusaurusProcessor extends AbstractProcessor {
             int serviceCount = model.getExternalServices().size();
             int configCount = model.getConfigs().size();
 
-            int fileCount = model.getClasses().size() + flowCount
+            // index.md + api/index.md + flows/index.md (if present)
+            int indexFiles = 1
+                    + (model.getClasses().isEmpty() ? 0 : 1)
+                    + (flowCount > 0 ? 1 : 0);
+            int sidebarFile = config.isFullStructure() ? 1 : 0;
+
+            int fileCount = indexFiles + sidebarFile
+                    + model.getClasses().size() + flowCount
                     + (entityCount > 0 ? entityCount + 1 : 0)
                     + (eventCount > 0 ? eventCount + 1 : 0)
                     + (ruleCount > 0 ? 1 : 0)
@@ -125,7 +141,7 @@ public class JDocusaurusProcessor extends AbstractProcessor {
 
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.NOTE,
-                    String.format("JDocusaurus: generados %d ficheros .md (%d clases, %d endpoints, %d diagramas, %d flujos, %d entidades, %d eventos, %d reglas, %d integraciones, %d configs)",
+                    String.format("JDocusaurus: generados %d ficheros (%d clases, %d endpoints, %d diagramas, %d flujos, %d entidades, %d eventos, %d reglas, %d integraciones, %d configs)",
                             fileCount,
                             model.getClasses().size(),
                             endpointCount,
@@ -208,7 +224,7 @@ public class JDocusaurusProcessor extends AbstractProcessor {
         }
     }
 
-    private void runCallGraphAnalysis(ProjectModel model) {
+    private void runCallGraphAnalysis(ProjectModel model, int maxDepth) {
         try {
             JavaParserScanner javaParserScanner = new JavaParserScanner(processingEnv);
 
