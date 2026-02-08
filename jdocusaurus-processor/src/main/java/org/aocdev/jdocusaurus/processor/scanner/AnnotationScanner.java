@@ -2,6 +2,7 @@ package org.aocdev.jdocusaurus.processor.scanner;
 
 import org.aocdev.jdocusaurus.annotations.api.*;
 import org.aocdev.jdocusaurus.annotations.data.*;
+import org.aocdev.jdocusaurus.annotations.event.*;
 import org.aocdev.jdocusaurus.annotations.flow.*;
 import org.aocdev.jdocusaurus.processor.model.*;
 
@@ -32,6 +33,21 @@ public class AnnotationScanner {
                 project.addEntity(entityModel);
             }
         }
+
+        // Scan @JDocEvent
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocEvent.class)) {
+            if (element.getKind() == ElementKind.CLASS) {
+                TypeElement typeElement = (TypeElement) element;
+                EventModel eventModel = scanEvent(typeElement);
+                project.addEvent(eventModel);
+            }
+        }
+
+        // Scan @JDocProduces on classes and methods
+        scanProducers(roundEnv, project);
+
+        // Scan @JDocConsumes on classes and methods
+        scanConsumers(roundEnv, project);
 
         return project;
     }
@@ -265,8 +281,138 @@ public class AnnotationScanner {
         return entity;
     }
 
-    public TypeElement getTypeElement(Element element) {
-        return (TypeElement) element;
+    private EventModel scanEvent(TypeElement typeElement) {
+        JDocEvent annotation = typeElement.getAnnotation(JDocEvent.class);
+
+        EventModel event = new EventModel();
+        event.setClassName(typeElement.getSimpleName().toString());
+        event.setName(annotation.name());
+        event.setDescription(annotation.description());
+        event.setTopic(annotation.topic());
+        event.setSchema(annotation.schema());
+        return event;
+    }
+
+    private void scanProducers(RoundEnvironment roundEnv, ProjectModel project) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocProduces.class)) {
+            scanProducerAnnotations(element, project, new JDocProduces[]{element.getAnnotation(JDocProduces.class)});
+        }
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocProducesAll.class)) {
+            scanProducerAnnotations(element, project, element.getAnnotation(JDocProducesAll.class).value());
+        }
+    }
+
+    private void scanProducerAnnotations(Element element, ProjectModel project, JDocProduces[] annotations) {
+        String className = getEnclosingClassName(element);
+        String methodName = element.getKind() == ElementKind.METHOD ? element.getSimpleName().toString() : "";
+
+        for (JDocProduces annotation : annotations) {
+            ProducerModel producer = new ProducerModel();
+            producer.setClassName(className);
+            producer.setMethodName(methodName);
+            producer.setDescription(annotation.description());
+            producer.setAsync(annotation.async());
+
+            String eventName = resolveEventName(annotation);
+            String topic = annotation.topic();
+            producer.setTopic(topic);
+
+            associateProducer(project, eventName, topic, producer);
+        }
+    }
+
+    private void scanConsumers(RoundEnvironment roundEnv, ProjectModel project) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocConsumes.class)) {
+            scanConsumerAnnotations(element, project, new JDocConsumes[]{element.getAnnotation(JDocConsumes.class)});
+        }
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocConsumesAll.class)) {
+            scanConsumerAnnotations(element, project, element.getAnnotation(JDocConsumesAll.class).value());
+        }
+    }
+
+    private void scanConsumerAnnotations(Element element, ProjectModel project, JDocConsumes[] annotations) {
+        String className = getEnclosingClassName(element);
+        String methodName = element.getKind() == ElementKind.METHOD ? element.getSimpleName().toString() : "";
+
+        for (JDocConsumes annotation : annotations) {
+            ConsumerModel consumer = new ConsumerModel();
+            consumer.setClassName(className);
+            consumer.setMethodName(methodName);
+            consumer.setDescription(annotation.description());
+            consumer.setGroup(annotation.group());
+
+            String eventName = resolveEventName(annotation);
+            String topic = annotation.topic();
+            consumer.setTopic(topic);
+
+            associateConsumer(project, eventName, topic, consumer);
+        }
+    }
+
+    private String resolveEventName(JDocProduces annotation) {
+        try {
+            return annotation.event().getSimpleName();
+        } catch (MirroredTypeException e) {
+            String fullName = e.getTypeMirror().toString();
+            int lastDot = fullName.lastIndexOf('.');
+            String name = lastDot >= 0 ? fullName.substring(lastDot + 1) : fullName;
+            return "Void".equals(name) ? "" : name;
+        }
+    }
+
+    private String resolveEventName(JDocConsumes annotation) {
+        try {
+            return annotation.event().getSimpleName();
+        } catch (MirroredTypeException e) {
+            String fullName = e.getTypeMirror().toString();
+            int lastDot = fullName.lastIndexOf('.');
+            String name = lastDot >= 0 ? fullName.substring(lastDot + 1) : fullName;
+            return "Void".equals(name) ? "" : name;
+        }
+    }
+
+    private void associateProducer(ProjectModel project, String eventName, String topic, ProducerModel producer) {
+        for (EventModel event : project.getEvents()) {
+            if (matchesEvent(event, eventName, topic)) {
+                event.addProducer(producer);
+                return;
+            }
+        }
+        // Create orphan event if not found
+        EventModel orphan = new EventModel();
+        orphan.setClassName(eventName.isEmpty() ? topic : eventName);
+        orphan.setName(eventName.isEmpty() ? topic : eventName);
+        orphan.setTopic(topic);
+        orphan.addProducer(producer);
+        project.addEvent(orphan);
+    }
+
+    private void associateConsumer(ProjectModel project, String eventName, String topic, ConsumerModel consumer) {
+        for (EventModel event : project.getEvents()) {
+            if (matchesEvent(event, eventName, topic)) {
+                event.addConsumer(consumer);
+                return;
+            }
+        }
+        EventModel orphan = new EventModel();
+        orphan.setClassName(eventName.isEmpty() ? topic : eventName);
+        orphan.setName(eventName.isEmpty() ? topic : eventName);
+        orphan.setTopic(topic);
+        orphan.addConsumer(consumer);
+        project.addEvent(orphan);
+    }
+
+    private boolean matchesEvent(EventModel event, String eventName, String topic) {
+        if (!eventName.isEmpty() && event.getClassName().equals(eventName)) return true;
+        if (!topic.isEmpty() && topic.equals(event.getTopic())) return true;
+        return false;
+    }
+
+    private String getEnclosingClassName(Element element) {
+        if (element.getKind() == ElementKind.METHOD) {
+            return element.getEnclosingElement().getSimpleName().toString();
+        }
+        return element.getSimpleName().toString();
     }
 
     private String simplifyType(String fullType) {

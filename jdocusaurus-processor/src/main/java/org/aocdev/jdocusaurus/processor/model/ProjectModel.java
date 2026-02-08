@@ -28,4 +28,10 @@ public class ProjectModel {
     public List<EntityModel> getEntities() { return entities; }
     public void setEntities(List<EntityModel> entities) { this.entities = entities; }
     public void addEntity(EntityModel entity) { this.entities.add(entity); }
+
+    private List<EventModel> events = new ArrayList<>();
+
+    public List<EventModel> getEvents() { return events; }
+    public void setEvents(List<EventModel> events) { this.events = events; }
+    public void addEvent(EventModel event) { this.events.add(event); }
 }
