@@ -3,30 +3,17 @@ package org.aocdev.jdocusaurus.processor.generator;
 import org.aocdev.jdocusaurus.processor.model.ConfigModel;
 import org.aocdev.jdocusaurus.processor.model.ProjectModel;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 public class ConfigMarkdownGenerator implements Generator {
 
-    private final String outputDir;
-
-    public ConfigMarkdownGenerator() { this("docs"); }
-
-    public ConfigMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
-
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         List<ConfigModel> configs = model.getConfigs();
         if (configs.isEmpty()) return;
 
-        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/config/index.md");
-        try (Writer writer = file.openWriter()) {
-            writer.write(generateConfigIndex(configs));
-        }
+        writer.write("config/index.md", generateConfigIndex(configs));
     }
 
     private String generateConfigIndex(List<ConfigModel> configs) {

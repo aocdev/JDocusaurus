@@ -3,35 +3,24 @@ package org.aocdev.jdocusaurus.processor.generator;
 import org.aocdev.jdocusaurus.processor.model.ExternalServiceModel;
 import org.aocdev.jdocusaurus.processor.model.ProjectModel;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 public class DependencyMapGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
     private final String serviceName;
-    private final String outputDir;
 
-    public DependencyMapGenerator(String serviceName) { this(serviceName, "docs"); }
-
-    public DependencyMapGenerator(String serviceName, String outputDir) {
+    public DependencyMapGenerator(String serviceName) {
         this.serviceName = serviceName;
-        this.outputDir = outputDir;
     }
 
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         List<ExternalServiceModel> services = model.getExternalServices();
         if (services.isEmpty()) return;
 
-        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/integrations/index.md");
-        try (Writer writer = file.openWriter()) {
-            writer.write(generateIntegrationsIndex(services));
-        }
+        writer.write("integrations/index.md", generateIntegrationsIndex(services));
     }
 
     private String generateIntegrationsIndex(List<ExternalServiceModel> services) {

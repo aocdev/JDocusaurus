@@ -3,11 +3,7 @@ package org.aocdev.jdocusaurus.processor.generator;
 import org.aocdev.jdocusaurus.processor.config.JDocusaurusConfig;
 import org.aocdev.jdocusaurus.processor.model.*;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 public class IndexGenerator implements Generator {
@@ -20,29 +16,18 @@ public class IndexGenerator implements Generator {
     }
 
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
-        String outputDir = config.getOutputDir();
-
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         // Global index
-        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/index.md");
-        try (Writer writer = indexFile.openWriter()) {
-            writer.write(generateGlobalIndex(model));
-        }
+        writer.write("index.md", generateGlobalIndex(model));
 
         // API index
         if (!model.getClasses().isEmpty()) {
-            FileObject apiIndex = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/api/index.md");
-            try (Writer writer = apiIndex.openWriter()) {
-                writer.write(generateApiIndex(model.getClasses()));
-            }
+            writer.write("api/index.md", generateApiIndex(model.getClasses()));
         }
 
         // Flows index
         if (!model.getAllFlows().isEmpty()) {
-            FileObject flowsIndex = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/flows/index.md");
-            try (Writer writer = flowsIndex.openWriter()) {
-                writer.write(generateFlowsIndex(model.getAllFlows()));
-            }
+            writer.write("flows/index.md", generateFlowsIndex(model.getAllFlows()));
         }
     }
 

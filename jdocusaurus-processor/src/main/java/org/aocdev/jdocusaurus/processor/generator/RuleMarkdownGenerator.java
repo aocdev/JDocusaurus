@@ -3,31 +3,18 @@ package org.aocdev.jdocusaurus.processor.generator;
 import org.aocdev.jdocusaurus.processor.model.BusinessRuleModel;
 import org.aocdev.jdocusaurus.processor.model.ProjectModel;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class RuleMarkdownGenerator implements Generator {
 
-    private final String outputDir;
-
-    public RuleMarkdownGenerator() { this("docs"); }
-
-    public RuleMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
-
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         List<BusinessRuleModel> rules = model.getBusinessRules();
         if (rules.isEmpty()) return;
 
-        FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/business-rules/index.md");
-        try (Writer writer = file.openWriter()) {
-            writer.write(generateRulesIndex(rules));
-        }
+        writer.write("business-rules/index.md", generateRulesIndex(rules));
     }
 
     private String generateRulesIndex(List<BusinessRuleModel> rules) {
@@ -39,11 +26,9 @@ public class RuleMarkdownGenerator implements Generator {
 
         md.append("# Reglas de Negocio\n\n");
 
-        // Group by severity
         Map<String, List<BusinessRuleModel>> bySeverity = rules.stream()
                 .collect(Collectors.groupingBy(BusinessRuleModel::getSeverity, LinkedHashMap::new, Collectors.toList()));
 
-        // Order: MANDATORY, WARNING, INFO
         List<String> severityOrder = List.of("MANDATORY", "WARNING", "INFO");
         for (String severity : severityOrder) {
             List<BusinessRuleModel> group = bySeverity.get(severity);

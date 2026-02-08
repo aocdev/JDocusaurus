@@ -2,32 +2,20 @@ package org.aocdev.jdocusaurus.processor.generator;
 
 import org.aocdev.jdocusaurus.processor.model.*;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 public class FlowMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
-    private final String outputDir;
-
-    public FlowMarkdownGenerator() { this("docs"); }
-
-    public FlowMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         for (FlowModel flow : model.getAllFlows()) {
             if (flow.getSteps().isEmpty()) continue;
 
             String fileName = toKebabCase(flow.getName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/flows/" + fileName);
-            try (Writer writer = file.openWriter()) {
-                writer.write(generateFlowMarkdown(flow, model.getAllParticipants()));
-            }
+            writer.write("flows/" + fileName, generateFlowMarkdown(flow, model.getAllParticipants()));
         }
     }
 

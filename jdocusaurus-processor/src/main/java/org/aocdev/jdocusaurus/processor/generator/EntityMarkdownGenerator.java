@@ -2,40 +2,23 @@ package org.aocdev.jdocusaurus.processor.generator;
 
 import org.aocdev.jdocusaurus.processor.model.*;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 public class EntityMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
-    private final String outputDir;
-
-    public EntityMarkdownGenerator() { this("docs"); }
-
-    public EntityMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         List<EntityModel> entities = model.getEntities();
         if (entities.isEmpty()) return;
 
-        // Generate index with global ER diagram
-        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/data-model/index.md");
-        try (Writer writer = indexFile.openWriter()) {
-            writer.write(generateIndex(entities));
-        }
+        writer.write("data-model/index.md", generateIndex(entities));
 
-        // Generate individual entity pages
         for (EntityModel entity : entities) {
             String fileName = toKebabCase(entity.getClassName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/data-model/" + fileName);
-            try (Writer writer = file.openWriter()) {
-                writer.write(generateEntityMarkdown(entity));
-            }
+            writer.write("data-model/" + fileName, generateEntityMarkdown(entity));
         }
     }
 
@@ -48,14 +31,12 @@ public class EntityMarkdownGenerator implements Generator {
 
         md.append("# Modelo de Datos\n\n");
 
-        // Global ER diagram
         String erDiagram = mermaidGenerator.generateERDiagram(entities);
         if (erDiagram != null) {
             md.append("## Diagrama ER\n\n");
             md.append(erDiagram).append("\n");
         }
 
-        // Entity summary table
         md.append("## Entidades\n\n");
         md.append("| Entidad | Tabla | Descripcion | Campos | Relaciones |\n");
         md.append("|---------|-------|------------|--------|------------|\n");
@@ -90,7 +71,6 @@ public class EntityMarkdownGenerator implements Generator {
             md.append("**Tabla:** `").append(entity.getTableName()).append("`\n\n");
         }
 
-        // Fields table
         if (!entity.getFields().isEmpty()) {
             md.append("## Campos\n\n");
             md.append("| Nombre | Tipo | Nullable | Descripcion | Constraints |\n");
@@ -117,7 +97,6 @@ public class EntityMarkdownGenerator implements Generator {
             md.append("\n");
         }
 
-        // Relations table
         if (!entity.getRelations().isEmpty()) {
             md.append("## Relaciones\n\n");
             md.append("| Campo | Tipo | Entidad destino | Descripcion |\n");

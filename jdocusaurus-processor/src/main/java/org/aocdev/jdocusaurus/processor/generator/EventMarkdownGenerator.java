@@ -2,40 +2,23 @@ package org.aocdev.jdocusaurus.processor.generator;
 
 import org.aocdev.jdocusaurus.processor.model.*;
 
-import javax.annotation.processing.Filer;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 public class EventMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();
-    private final String outputDir;
-
-    public EventMarkdownGenerator() { this("docs"); }
-
-    public EventMarkdownGenerator(String outputDir) { this.outputDir = outputDir; }
 
     @Override
-    public void generate(ProjectModel model, Filer filer) throws IOException {
+    public void generate(ProjectModel model, DocWriter writer) throws IOException {
         List<EventModel> events = model.getEvents();
         if (events.isEmpty()) return;
 
-        // Generate index
-        FileObject indexFile = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/events/index.md");
-        try (Writer writer = indexFile.openWriter()) {
-            writer.write(generateIndex(events));
-        }
+        writer.write("events/index.md", generateIndex(events));
 
-        // Generate individual event pages
         for (EventModel event : events) {
             String fileName = toKebabCase(event.getDisplayName()) + ".md";
-            FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", outputDir + "/events/" + fileName);
-            try (Writer writer = file.openWriter()) {
-                writer.write(generateEventMarkdown(event));
-            }
+            writer.write("events/" + fileName, generateEventMarkdown(event));
         }
     }
 
@@ -48,14 +31,12 @@ public class EventMarkdownGenerator implements Generator {
 
         md.append("# Eventos\n\n");
 
-        // Event flow diagram
         String diagram = mermaidGenerator.generateEventFlowDiagram(events);
         if (diagram != null) {
             md.append("## Mapa de eventos\n\n");
             md.append(diagram).append("\n");
         }
 
-        // Summary table
         md.append("## Resumen\n\n");
         md.append("| Evento | Topic | Productores | Consumidores | Descripcion |\n");
         md.append("|--------|-------|-------------|-------------|-------------|\n");
@@ -97,7 +78,6 @@ public class EventMarkdownGenerator implements Generator {
             md.append("```json\n").append(event.getSchema()).append("\n```\n\n");
         }
 
-        // Producers
         if (!event.getProducers().isEmpty()) {
             md.append("## Productores\n\n");
             md.append("| Clase | Metodo | Descripcion | Async |\n");
@@ -113,7 +93,6 @@ public class EventMarkdownGenerator implements Generator {
             md.append("\n");
         }
 
-        // Consumers
         if (!event.getConsumers().isEmpty()) {
             md.append("## Consumidores\n\n");
             md.append("| Clase | Metodo | Descripcion | Consumer Group |\n");

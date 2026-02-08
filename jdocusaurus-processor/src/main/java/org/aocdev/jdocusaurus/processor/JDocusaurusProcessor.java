@@ -89,27 +89,25 @@ public class JDocusaurusProcessor extends AbstractProcessor {
             runCallGraphAnalysis(model, config.getAutoFlowDepth());
         }
 
-        String outputDir = config.getOutputDir();
-
         try {
-            Filer filer = processingEnv.getFiler();
+            DocWriter docWriter = new DocWriter(config.getOutputDir(), processingEnv.getFiler());
 
             // Content generators
-            new MarkdownGenerator(outputDir).generate(model, filer);
-            new FlowMarkdownGenerator(outputDir).generate(model, filer);
-            new EntityMarkdownGenerator(outputDir).generate(model, filer);
-            new EventMarkdownGenerator(outputDir).generate(model, filer);
-            new RuleMarkdownGenerator(outputDir).generate(model, filer);
+            new MarkdownGenerator().generate(model, docWriter);
+            new FlowMarkdownGenerator().generate(model, docWriter);
+            new EntityMarkdownGenerator().generate(model, docWriter);
+            new EventMarkdownGenerator().generate(model, docWriter);
+            new RuleMarkdownGenerator().generate(model, docWriter);
 
             String serviceName = config.getProjectName().isEmpty()
                     ? (model.getClasses().isEmpty() ? "MyService" : model.getClasses().get(0).getName())
                     : config.getProjectName();
-            new DependencyMapGenerator(serviceName, outputDir).generate(model, filer);
-            new ConfigMarkdownGenerator(outputDir).generate(model, filer);
+            new DependencyMapGenerator(serviceName).generate(model, docWriter);
+            new ConfigMarkdownGenerator().generate(model, docWriter);
 
             // Structure generators
-            new IndexGenerator(config).generate(model, filer);
-            new SidebarGenerator(config).generate(model, filer);
+            new IndexGenerator(config).generate(model, docWriter);
+            new SidebarGenerator(config).generate(model, docWriter);
 
             int endpointCount = model.getClasses().stream()
                     .mapToInt(c -> c.getEndpoints().size())
