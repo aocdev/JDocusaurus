@@ -34,4 +34,22 @@ public class ProjectModel {
     public List<EventModel> getEvents() { return events; }
     public void setEvents(List<EventModel> events) { this.events = events; }
     public void addEvent(EventModel event) { this.events.add(event); }
+
+    private List<BusinessRuleModel> businessRules = new ArrayList<>();
+
+    public List<BusinessRuleModel> getBusinessRules() { return businessRules; }
+    public void setBusinessRules(List<BusinessRuleModel> businessRules) { this.businessRules = businessRules; }
+    public void addBusinessRule(BusinessRuleModel rule) { this.businessRules.add(rule); }
+
+    private List<ExternalServiceModel> externalServices = new ArrayList<>();
+
+    public List<ExternalServiceModel> getExternalServices() { return externalServices; }
+    public void setExternalServices(List<ExternalServiceModel> externalServices) { this.externalServices = externalServices; }
+    public void addExternalService(ExternalServiceModel service) { this.externalServices.add(service); }
+
+    private List<ConfigModel> configs = new ArrayList<>();
+
+    public List<ConfigModel> getConfigs() { return configs; }
+    public void setConfigs(List<ConfigModel> configs) { this.configs = configs; }
+    public void addConfig(ConfigModel config) { this.configs.add(config); }
 }

@@ -1,9 +1,12 @@
 package org.aocdev.jdocusaurus.processor.scanner;
 
 import org.aocdev.jdocusaurus.annotations.api.*;
+import org.aocdev.jdocusaurus.annotations.config.*;
 import org.aocdev.jdocusaurus.annotations.data.*;
 import org.aocdev.jdocusaurus.annotations.event.*;
 import org.aocdev.jdocusaurus.annotations.flow.*;
+import org.aocdev.jdocusaurus.annotations.integration.JDocExternalService;
+import org.aocdev.jdocusaurus.annotations.rule.*;
 import org.aocdev.jdocusaurus.processor.model.*;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -48,6 +51,15 @@ public class AnnotationScanner {
 
         // Scan @JDocConsumes on classes and methods
         scanConsumers(roundEnv, project);
+
+        // Scan @JDocBusinessRule
+        scanBusinessRules(roundEnv, project);
+
+        // Scan @JDocExternalService
+        scanExternalServices(roundEnv, project);
+
+        // Scan @JDocConfig
+        scanConfigs(roundEnv, project);
 
         return project;
     }
@@ -413,6 +425,77 @@ public class AnnotationScanner {
             return element.getEnclosingElement().getSimpleName().toString();
         }
         return element.getSimpleName().toString();
+    }
+
+    private void scanBusinessRules(RoundEnvironment roundEnv, ProjectModel project) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocBusinessRule.class)) {
+            scanRuleAnnotations(element, project, new JDocBusinessRule[]{element.getAnnotation(JDocBusinessRule.class)});
+        }
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocBusinessRules.class)) {
+            scanRuleAnnotations(element, project, element.getAnnotation(JDocBusinessRules.class).value());
+        }
+    }
+
+    private void scanRuleAnnotations(Element element, ProjectModel project, JDocBusinessRule[] annotations) {
+        String className = getEnclosingClassName(element);
+        String methodName = element.getKind() == ElementKind.METHOD ? element.getSimpleName().toString() : "";
+
+        for (JDocBusinessRule annotation : annotations) {
+            BusinessRuleModel model = new BusinessRuleModel();
+            model.setId(annotation.id());
+            model.setRule(annotation.rule());
+            model.setSeverity(annotation.severity().name());
+            model.setRelatedRules(annotation.relatedRules());
+            model.setAppliedInClass(className);
+            model.setAppliedInMethod(methodName);
+            project.addBusinessRule(model);
+        }
+    }
+
+    private void scanExternalServices(RoundEnvironment roundEnv, ProjectModel project) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocExternalService.class)) {
+            JDocExternalService annotation = element.getAnnotation(JDocExternalService.class);
+            ExternalServiceModel model = new ExternalServiceModel();
+            model.setName(annotation.name());
+            model.setDescription(annotation.description());
+            model.setUrl(annotation.url());
+            model.setType(annotation.type().name());
+            model.setOwner(annotation.owner());
+
+            if (element.getKind() == ElementKind.FIELD) {
+                model.setUsedByClass(element.getEnclosingElement().getSimpleName().toString());
+                model.setUsedByField(element.getSimpleName().toString());
+            } else {
+                model.setUsedByClass(element.getSimpleName().toString());
+            }
+
+            project.addExternalService(model);
+        }
+    }
+
+    private void scanConfigs(RoundEnvironment roundEnv, ProjectModel project) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocConfig.class)) {
+            scanConfigAnnotations(element, project, new JDocConfig[]{element.getAnnotation(JDocConfig.class)});
+        }
+        for (Element element : roundEnv.getElementsAnnotatedWith(JDocConfigs.class)) {
+            scanConfigAnnotations(element, project, element.getAnnotation(JDocConfigs.class).value());
+        }
+    }
+
+    private void scanConfigAnnotations(Element element, ProjectModel project, JDocConfig[] annotations) {
+        String className = getEnclosingClassName(element);
+
+        for (JDocConfig annotation : annotations) {
+            ConfigModel model = new ConfigModel();
+            model.setKey(annotation.key());
+            model.setDescription(annotation.description());
+            model.setDefaultValue(annotation.defaultValue());
+            model.setRequired(annotation.required());
+            model.setSecret(annotation.secret());
+            model.setExample(annotation.example());
+            model.setDeclaredInClass(className);
+            project.addConfig(model);
+        }
     }
 
     private String simplifyType(String fullType) {
