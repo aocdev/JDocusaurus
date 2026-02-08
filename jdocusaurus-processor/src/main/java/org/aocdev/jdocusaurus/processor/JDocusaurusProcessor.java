@@ -1,9 +1,6 @@
 package org.aocdev.jdocusaurus.processor;
 
-import org.aocdev.jdocusaurus.processor.generator.EntityMarkdownGenerator;
-import org.aocdev.jdocusaurus.processor.generator.EventMarkdownGenerator;
-import org.aocdev.jdocusaurus.processor.generator.FlowMarkdownGenerator;
-import org.aocdev.jdocusaurus.processor.generator.MarkdownGenerator;
+import org.aocdev.jdocusaurus.processor.generator.*;
 import org.aocdev.jdocusaurus.processor.model.*;
 import org.aocdev.jdocusaurus.processor.scanner.AnnotationScanner;
 import org.aocdev.jdocusaurus.processor.scanner.JavaParserScanner;
@@ -37,7 +34,12 @@ import java.util.stream.Collectors;
         "org.aocdev.jdocusaurus.annotations.event.JDocProduces",
         "org.aocdev.jdocusaurus.annotations.event.JDocProducesAll",
         "org.aocdev.jdocusaurus.annotations.event.JDocConsumes",
-        "org.aocdev.jdocusaurus.annotations.event.JDocConsumesAll"
+        "org.aocdev.jdocusaurus.annotations.event.JDocConsumesAll",
+        "org.aocdev.jdocusaurus.annotations.rule.JDocBusinessRule",
+        "org.aocdev.jdocusaurus.annotations.rule.JDocBusinessRules",
+        "org.aocdev.jdocusaurus.annotations.integration.JDocExternalService",
+        "org.aocdev.jdocusaurus.annotations.config.JDocConfig",
+        "org.aocdev.jdocusaurus.annotations.config.JDocConfigs"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class JDocusaurusProcessor extends AbstractProcessor {
@@ -53,7 +55,9 @@ public class JDocusaurusProcessor extends AbstractProcessor {
         AnnotationScanner scanner = new AnnotationScanner();
         ProjectModel model = scanner.scan(roundEnv);
 
-        if (model.getClasses().isEmpty() && model.getEntities().isEmpty() && model.getEvents().isEmpty()) {
+        if (model.getClasses().isEmpty() && model.getEntities().isEmpty() && model.getEvents().isEmpty()
+                && model.getBusinessRules().isEmpty() && model.getExternalServices().isEmpty()
+                && model.getConfigs().isEmpty()) {
             return false;
         }
 
@@ -86,6 +90,18 @@ public class JDocusaurusProcessor extends AbstractProcessor {
             EventMarkdownGenerator eventGenerator = new EventMarkdownGenerator();
             eventGenerator.generate(model, processingEnv.getFiler());
 
+            RuleMarkdownGenerator ruleGenerator = new RuleMarkdownGenerator();
+            ruleGenerator.generate(model, processingEnv.getFiler());
+
+            String serviceName = model.getClasses().isEmpty()
+                    ? "MyService"
+                    : model.getClasses().get(0).getName();
+            DependencyMapGenerator depGenerator = new DependencyMapGenerator(serviceName);
+            depGenerator.generate(model, processingEnv.getFiler());
+
+            ConfigMarkdownGenerator configGenerator = new ConfigMarkdownGenerator();
+            configGenerator.generate(model, processingEnv.getFiler());
+
             int endpointCount = model.getClasses().stream()
                     .mapToInt(c -> c.getEndpoints().size())
                     .sum();
@@ -96,19 +112,30 @@ public class JDocusaurusProcessor extends AbstractProcessor {
                     .count();
             int entityCount = model.getEntities().size();
             int eventCount = model.getEvents().size();
+            int ruleCount = model.getBusinessRules().size();
+            int serviceCount = model.getExternalServices().size();
+            int configCount = model.getConfigs().size();
+
+            int fileCount = model.getClasses().size() + flowCount
+                    + (entityCount > 0 ? entityCount + 1 : 0)
+                    + (eventCount > 0 ? eventCount + 1 : 0)
+                    + (ruleCount > 0 ? 1 : 0)
+                    + (serviceCount > 0 ? 1 : 0)
+                    + (configCount > 0 ? 1 : 0);
 
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.NOTE,
-                    String.format("JDocusaurus: generados %d ficheros .md (%d clases, %d endpoints, %d diagramas, %d flujos, %d entidades, %d eventos)",
-                            model.getClasses().size() + flowCount
-                                    + (entityCount > 0 ? entityCount + 1 : 0)
-                                    + (eventCount > 0 ? eventCount + 1 : 0),
+                    String.format("JDocusaurus: generados %d ficheros .md (%d clases, %d endpoints, %d diagramas, %d flujos, %d entidades, %d eventos, %d reglas, %d integraciones, %d configs)",
+                            fileCount,
                             model.getClasses().size(),
                             endpointCount,
                             diagramCount,
                             flowCount,
                             entityCount,
-                            eventCount)
+                            eventCount,
+                            ruleCount,
+                            serviceCount,
+                            configCount)
             );
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
