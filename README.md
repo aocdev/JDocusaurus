@@ -411,4 +411,10 @@ La documentacion se genera automaticamente durante la compilacion del modulo que
 
 ## Licencia
 
-MIT
+[Apache License 2.0](LICENSE)
+
+```
+Copyright 2026 aocdev (Albert Ortells)
+```
+
+Ver [NOTICE](NOTICE) para atribuciones de terceros.
