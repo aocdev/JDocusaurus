@@ -1,0 +1,165 @@
+package org.aocdev.jdocusaurus.processor.generator;
+
+import org.aocdev.jdocusaurus.processor.model.*;
+
+import java.util.*;
+
+public class MermaidGenerator {
+
+    public String generateSequenceDiagramFromCallGraph(CallGraphModel graph, String httpMethod,
+                                                        String path, List<ParticipantModel> knownParticipants) {
+        if (graph == null || graph.isEmpty()) return null;
+
+        StringBuilder md = new StringBuilder();
+        md.append("```mermaid\nsequenceDiagram\n");
+
+        Set<String> participants = new LinkedHashSet<>();
+        participants.add("Client");
+        participants.add(graph.getSourceClass());
+        collectParticipants(graph, participants);
+
+        Map<String, String> aliasMap = buildAliasMap(knownParticipants);
+        for (String p : participants) {
+            String alias = aliasMap.get(p);
+            if (alias != null && !alias.equals(p)) {
+                md.append("    participant ").append(p).append(" as ").append(alias).append("\n");
+            } else {
+                md.append("    participant ").append(p).append("\n");
+            }
+        }
+        md.append("\n");
+
+        md.append("    Client->>").append(graph.getSourceClass()).append(": ")
+                .append(httpMethod).append(" ").append(path).append("\n");
+
+        renderEdges(graph, md, new HashSet<>());
+
+        md.append("    ").append(graph.getSourceClass()).append("-->>Client: response\n");
+
+        md.append("```\n");
+        return md.toString();
+    }
+
+    public String generateSequenceDiagramFromManualSteps(List<FlowStepModel> steps,
+                                                          List<ParticipantModel> knownParticipants) {
+        if (steps == null || steps.isEmpty()) return null;
+
+        StringBuilder md = new StringBuilder();
+        md.append("```mermaid\nsequenceDiagram\n");
+
+        Set<String> participants = new LinkedHashSet<>();
+        for (FlowStepModel step : steps) {
+            participants.add(step.getFrom());
+            participants.add(step.getTo());
+        }
+
+        Map<String, String> aliasMap = buildAliasMap(knownParticipants);
+        for (String p : participants) {
+            String alias = aliasMap.get(p);
+            if (alias != null && !alias.equals(p)) {
+                md.append("    participant ").append(p).append(" as ").append(alias).append("\n");
+            } else {
+                md.append("    participant ").append(p).append("\n");
+            }
+        }
+        md.append("\n");
+
+        String currentCondition = null;
+        for (FlowStepModel step : steps) {
+            if (!step.getCondition().isEmpty() && !step.getCondition().equals(currentCondition)) {
+                if (currentCondition != null) {
+                    md.append("    end\n");
+                }
+                md.append("    alt ").append(step.getCondition()).append("\n");
+                currentCondition = step.getCondition();
+            } else if (step.getCondition().isEmpty() && currentCondition != null) {
+                md.append("    end\n");
+                currentCondition = null;
+            }
+
+            String arrow = step.getType().equals("ASYNC") ? "-)>" : "->>";
+            String indent = currentCondition != null ? "        " : "    ";
+            md.append(indent).append(step.getFrom()).append(arrow)
+                    .append(step.getTo()).append(": ").append(step.getMessage()).append("\n");
+
+            if (!step.getReturnMessage().isEmpty()) {
+                md.append(indent).append(step.getTo()).append("-->>")
+                        .append(step.getFrom()).append(": ").append(step.getReturnMessage()).append("\n");
+            }
+
+            if (!step.getNote().isEmpty()) {
+                md.append(indent).append("Note over ").append(step.getFrom()).append(",")
+                        .append(step.getTo()).append(": ").append(step.getNote()).append("\n");
+            }
+        }
+
+        if (currentCondition != null) {
+            md.append("    end\n");
+        }
+
+        md.append("```\n");
+        return md.toString();
+    }
+
+    private void renderEdges(CallGraphModel graph, StringBuilder md, Set<String> rendered) {
+        String currentCondition = null;
+
+        for (CallGraphModel.CallEdge edge : graph.getEdges()) {
+            String edgeKey = edge.getSourceClass() + "->" + edge.getTargetFieldType() + "." + edge.getTargetMethod();
+            if (rendered.contains(edgeKey)) continue;
+            rendered.add(edgeKey);
+
+            if (edge.getCondition() != null && !edge.getCondition().isEmpty()) {
+                if (!edge.getCondition().equals(currentCondition)) {
+                    if (currentCondition != null) md.append("    end\n");
+                    if (edge.getCondition().equals("else")) {
+                        md.append("    else\n");
+                    } else {
+                        md.append("    alt ").append(edge.getCondition()).append("\n");
+                    }
+                    currentCondition = edge.getCondition();
+                }
+            } else if (currentCondition != null) {
+                md.append("    end\n");
+                currentCondition = null;
+            }
+
+            String indent = currentCondition != null ? "        " : "    ";
+            String arrow = edge.isAsync() ? "-)>" : "->>";
+            String callLabel = edge.getTargetMethod() + "(" + edge.getArguments() + ")";
+
+            md.append(indent).append(edge.getSourceClass()).append(arrow)
+                    .append(edge.getTargetFieldType()).append(": ").append(callLabel).append("\n");
+
+            if (edge.hasSubCalls()) {
+                renderEdges(edge.getSubCalls(), md, rendered);
+            }
+
+            md.append(indent).append(edge.getTargetFieldType()).append("-->>")
+                    .append(edge.getSourceClass()).append(": response\n");
+        }
+
+        if (currentCondition != null) {
+            md.append("    end\n");
+        }
+    }
+
+    private void collectParticipants(CallGraphModel graph, Set<String> participants) {
+        for (CallGraphModel.CallEdge edge : graph.getEdges()) {
+            participants.add(edge.getTargetFieldType());
+            if (edge.hasSubCalls()) {
+                collectParticipants(edge.getSubCalls(), participants);
+            }
+        }
+    }
+
+    private Map<String, String> buildAliasMap(List<ParticipantModel> participants) {
+        Map<String, String> map = new HashMap<>();
+        if (participants != null) {
+            for (ParticipantModel p : participants) {
+                map.put(p.getName(), p.getDisplayAlias());
+            }
+        }
+        return map;
+    }
+}
