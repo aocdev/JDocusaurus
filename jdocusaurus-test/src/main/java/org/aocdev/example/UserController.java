@@ -3,8 +3,10 @@ package org.aocdev.example;
 import org.aocdev.jdocusaurus.annotations.api.*;
 import org.aocdev.jdocusaurus.annotations.enums.HttpMethod;
 import org.aocdev.jdocusaurus.annotations.enums.ParamLocation;
+import org.aocdev.jdocusaurus.annotations.event.JDocProduces;
 import org.aocdev.jdocusaurus.annotations.flow.*;
 import org.aocdev.jdocusaurus.annotations.enums.ParticipantType;
+import org.aocdev.example.event.UserCreatedEvent;
 
 import java.util.List;
 
@@ -72,6 +74,7 @@ public class UserController {
     @JDocFlowStep(flow = "user-registration", order = 3, from = "UserService", to = "UserRepository", message = "save(user)", returnMessage = "savedUser")
     @JDocFlowStep(flow = "user-registration", order = 4, from = "UserService", to = "NotificationService", message = "sendWelcomeEmail(user)")
     @JDocFlowStep(flow = "user-registration", order = 5, from = "UserController", to = "Client", message = "201 Created")
+    @JDocProduces(event = UserCreatedEvent.class, topic = "user.created", description = "Emite evento al crear usuario")
     public Object createUser(
             @JDocParam(
                     name = "user",
