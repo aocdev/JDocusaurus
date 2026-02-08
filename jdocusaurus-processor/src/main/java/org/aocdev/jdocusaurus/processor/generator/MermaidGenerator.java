@@ -225,6 +225,31 @@ public class MermaidGenerator {
         return md.toString();
     }
 
+    public String generateERDiagramSimplified(List<EntityModel> entities) {
+        if (entities == null || entities.isEmpty()) return null;
+
+        StringBuilder md = new StringBuilder();
+        md.append("```mermaid\nerDiagram\n");
+
+        for (EntityModel entity : entities) {
+            md.append("    ").append(entity.getDisplayName()).append("\n");
+        }
+
+        md.append("\n");
+
+        for (EntityModel entity : entities) {
+            for (RelationModel relation : entity.getRelations()) {
+                md.append("    ").append(entity.getDisplayName())
+                        .append(" ").append(relation.getMermaidRelation()).append(" ")
+                        .append(relation.getTargetEntityName())
+                        .append(" : ").append(relation.getFieldName()).append("\n");
+            }
+        }
+
+        md.append("```\n");
+        return md.toString();
+    }
+
     public String generateDependencyMap(String serviceName, List<ExternalServiceModel> services) {
         if (services == null || services.isEmpty()) return null;
 

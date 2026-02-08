@@ -75,6 +75,24 @@ public class IndexGenerator implements Generator {
             }
         }
 
+        // Simplified ER diagram
+        if (!model.getEntities().isEmpty()) {
+            String erDiagram = mermaidGenerator.generateERDiagramSimplified(model.getEntities());
+            if (erDiagram != null) {
+                md.append("## Modelo de Datos\n\n");
+                md.append(erDiagram).append("\n");
+            }
+        }
+
+        // Event flow diagram
+        if (!model.getEvents().isEmpty()) {
+            String eventDiagram = mermaidGenerator.generateEventFlowDiagram(model.getEvents());
+            if (eventDiagram != null) {
+                md.append("## Eventos\n\n");
+                md.append(eventDiagram).append("\n");
+            }
+        }
+
         // Summary
         md.append("## Resumen\n\n");
         md.append("| Seccion | Cantidad |\n");
