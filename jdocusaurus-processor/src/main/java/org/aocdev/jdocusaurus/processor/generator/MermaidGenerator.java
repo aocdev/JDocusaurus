@@ -225,6 +225,27 @@ public class MermaidGenerator {
         return md.toString();
     }
 
+    public String generateDependencyMap(String serviceName, List<ExternalServiceModel> services) {
+        if (services == null || services.isEmpty()) return null;
+
+        StringBuilder md = new StringBuilder();
+        md.append("```mermaid\ngraph TD\n");
+
+        String serviceId = sanitizeId(serviceName);
+        md.append("    ").append(serviceId).append("([\"").append(serviceName).append("\"])\n");
+        md.append("    style ").append(serviceId).append(" fill:#4CAF50,color:#fff\n");
+
+        for (ExternalServiceModel service : services) {
+            String extId = sanitizeId(service.getName());
+            md.append("    ").append(extId).append("[\"").append(service.getName()).append("\"]\n");
+            md.append("    ").append(serviceId).append(" -->|").append(service.getType())
+                    .append("| ").append(extId).append("\n");
+        }
+
+        md.append("```\n");
+        return md.toString();
+    }
+
     private String sanitizeId(String name) {
         return name.replaceAll("[^a-zA-Z0-9]", "_");
     }
