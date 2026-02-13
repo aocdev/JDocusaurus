@@ -1,0 +1,45 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+labels: [ "enhancement" ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your suggestion! Please describe the feature you'd like to see.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What problem does this feature solve? Why is it needed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: |
+        How would users interact with this feature?
+        Include proposed annotation syntax, processor option, or generated output.
+      render: java
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-output
+    attributes:
+      label: Expected output
+      description: What Markdown or Mermaid output should be generated?
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative approaches you've considered.
+    validations:
+      required: false

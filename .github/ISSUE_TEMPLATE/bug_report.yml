@@ -1,0 +1,67 @@
+name: Bug Report
+description: Report a bug in JDocusaurus
+labels: [ "bug" ]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Please fill out the information below to help us investigate.
+
+  - type: input
+    id: version
+    attributes:
+      label: JDocusaurus version
+      placeholder: "1.0-SNAPSHOT"
+    validations:
+      required: true
+
+  - type: input
+    id: java-version
+    attributes:
+      label: Java version
+      placeholder: "21.0.7"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The annotated class that triggers the issue.
+      render: java
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What Markdown/Mermaid output did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What output was actually generated (or the error)?
+    validations:
+      required: true
+
+  - type: textarea
+    id: build-log
+    attributes:
+      label: Build log
+      description: Relevant `JDocusaurus:` messages from the build output.
+      render: text
+    validations:
+      required: false
