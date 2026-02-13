@@ -9,6 +9,16 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import java.util.*;
 
+/**
+ * Enriches {@link EntityModel} instances with JPA metadata read via
+ * {@code AnnotationMirror}, without requiring JPA as a compile dependency.
+ *
+ * <p>Supports both {@code javax.persistence.*} and {@code jakarta.persistence.*}
+ * namespaces. Detects {@code @Id}, {@code @Column}, {@code @Table}, and
+ * relationship annotations ({@code @OneToMany}, {@code @ManyToOne}, etc.).
+ *
+ * @since 1.0.0
+ */
 public class JpaScanner {
 
     private static final Set<String> JPA_ID_ANNOTATIONS = Set.of(

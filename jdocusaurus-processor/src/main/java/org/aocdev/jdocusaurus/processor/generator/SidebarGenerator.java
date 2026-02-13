@@ -7,6 +7,15 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Generates the Docusaurus {@code sidebars.js} configuration file.
+ *
+ * <p>Output: {@code sidebars.js} (only when {@code jdoc.fullStructure=true}).
+ * Sidebar document IDs use the output directory as prefix for relative paths,
+ * or no prefix for absolute paths (files are at the Docusaurus docs root).
+ *
+ * @since 1.0.0
+ */
 public class SidebarGenerator implements Generator {
 
     private final JDocusaurusConfig config;

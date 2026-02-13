@@ -3,6 +3,15 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model representing a {@code @JDocEntity}-annotated data entity.
+ *
+ * <p>Contains entity metadata, fields, and relationships. Used to generate
+ * entity pages and the Mermaid ER diagram. May be enriched with JPA metadata
+ * by {@link org.aocdev.jdocusaurus.processor.scanner.JpaScanner}.
+ *
+ * @since 1.0.0
+ */
 public class EntityModel {
     private String className;
     private String name;

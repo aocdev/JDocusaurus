@@ -3,6 +3,14 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model representing a {@code @JDocClass}-annotated controller or service.
+ *
+ * <p>Contains the class metadata (name, basePath, version) and its child
+ * elements: endpoints, flows, and an optional sequence diagram participant.
+ *
+ * @since 1.0.0
+ */
 public class ClassModel {
     private String className;
     private String name;

@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a single step within a {@link FlowModel} sequence diagram.
+ *
+ * @since 1.0.0
+ */
 public class FlowStepModel {
     private String flow;
     private int order;

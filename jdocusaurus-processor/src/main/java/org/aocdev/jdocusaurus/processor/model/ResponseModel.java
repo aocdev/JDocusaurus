@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing an HTTP response for an {@link EndpointModel}.
+ *
+ * @since 1.0.0
+ */
 public class ResponseModel {
     private int code;
     private String description;

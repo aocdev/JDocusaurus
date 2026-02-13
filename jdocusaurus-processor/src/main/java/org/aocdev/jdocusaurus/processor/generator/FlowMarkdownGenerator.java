@@ -5,6 +5,13 @@ import org.aocdev.jdocusaurus.processor.model.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates per-flow Markdown pages with Mermaid sequence diagrams.
+ *
+ * <p>Output: {@code flows/{kebab-case-name}.md} for each declared flow.
+ *
+ * @since 1.0.0
+ */
 public class FlowMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();

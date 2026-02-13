@@ -5,6 +5,14 @@ import org.aocdev.jdocusaurus.processor.model.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates data model documentation with ER diagrams and entity detail pages.
+ *
+ * <p>Output: {@code data-model/index.md} (global ER diagram + summary table)
+ * and {@code data-model/{kebab-case-name}.md} per entity.
+ *
+ * @since 1.0.0
+ */
 public class EntityMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();

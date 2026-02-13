@@ -5,6 +5,14 @@ import org.aocdev.jdocusaurus.processor.model.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates event documentation with Mermaid flow graphs and event detail pages.
+ *
+ * <p>Output: {@code events/index.md} (event flow diagram + summary table)
+ * and {@code events/{kebab-case-name}.md} per event.
+ *
+ * @since 1.0.0
+ */
 public class EventMarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();

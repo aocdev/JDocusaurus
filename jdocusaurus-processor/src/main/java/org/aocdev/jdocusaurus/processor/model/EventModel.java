@@ -3,6 +3,14 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model representing a {@code @JDocEvent}-annotated domain event.
+ *
+ * <p>Contains the event metadata and its associated producers and consumers,
+ * used to generate event pages and the Mermaid event flow graph.
+ *
+ * @since 1.0.0
+ */
 public class EventModel {
     private String className;
     private String name;

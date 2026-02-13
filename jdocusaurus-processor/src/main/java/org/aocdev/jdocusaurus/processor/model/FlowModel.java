@@ -3,6 +3,14 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model representing a {@code @JDocFlow}-declared business flow.
+ *
+ * <p>Contains ordered steps that produce a Mermaid sequence diagram
+ * under the {@code flows/} directory.
+ *
+ * @since 1.0.0
+ */
 public class FlowModel {
     private String name;
     private String description;

@@ -1,5 +1,12 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a {@code @JDocConfig}-annotated configuration property.
+ *
+ * <p>Properties marked as secret have their values masked in the generated output.
+ *
+ * @since 1.0.0
+ */
 public class ConfigModel {
     private String key;
     private String description;

@@ -1,5 +1,13 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a {@code @JDocBusinessRule}-annotated business rule.
+ *
+ * <p>Includes the rule ID, severity, description, and the location
+ * (class/method) where it is enforced.
+ *
+ * @since 1.0.0
+ */
 public class BusinessRuleModel {
     private String id;
     private String rule;

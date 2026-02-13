@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing an event producer (a class/method that emits an {@link EventModel}).
+ *
+ * @since 1.0.0
+ */
 public class ProducerModel {
     private String className;
     private String methodName;

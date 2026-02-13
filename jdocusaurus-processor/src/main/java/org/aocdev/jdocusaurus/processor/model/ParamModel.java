@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing an HTTP request parameter within an {@link EndpointModel}.
+ *
+ * @since 1.0.0
+ */
 public class ParamModel {
     private String name;
     private String description;

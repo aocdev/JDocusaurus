@@ -9,13 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Abstraccion para escritura de ficheros generados.
- * <p>
- * Si outputDir es una ruta absoluta (ej: /home/user/docs), escribe directamente
- * en el sistema de ficheros con java.nio.file.Files.
- * <p>
- * Si outputDir es una ruta relativa (ej: docs), escribe via la API Filer del
- * annotation processor (dentro de target/classes/).
+ * File output abstraction that supports both relative and absolute paths.
+ *
+ * <p>When {@code outputDir} is an absolute path (e.g., {@code /home/user/docs}),
+ * files are written directly via {@link java.nio.file.Files}. When relative
+ * (e.g., {@code "docs"}), files are written via the annotation processor's
+ * {@link javax.annotation.processing.Filer} API to {@code target/classes/}.
+ *
+ * @since 1.0.0
  */
 public class DocWriter {
 
@@ -30,10 +31,11 @@ public class DocWriter {
     }
 
     /**
-     * Escribe contenido en un fichero relativo al outputDir.
+     * Writes content to a file at the given path relative to the output directory.
      *
-     * @param relativePath ruta relativa dentro del outputDir (ej: "api/user-controller.md")
-     * @param content      contenido del fichero
+     * @param relativePath path relative to outputDir (e.g., {@code "api/user-controller.md"})
+     * @param content      file content to write
+     * @throws IOException if the file cannot be created or written
      */
     public void write(String relativePath, String content) throws IOException {
         if (absolute) {
@@ -49,10 +51,12 @@ public class DocWriter {
         }
     }
 
+    /** Returns {@code true} if the output directory is an absolute path. */
     public boolean isAbsolute() {
         return absolute;
     }
 
+    /** Returns the configured output directory. */
     public String getOutputDir() {
         return outputDir;
     }

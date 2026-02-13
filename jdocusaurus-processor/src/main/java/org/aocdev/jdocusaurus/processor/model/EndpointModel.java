@@ -3,6 +3,15 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model representing a {@code @JDocEndpoint}-annotated HTTP endpoint.
+ *
+ * <p>Holds all endpoint documentation: HTTP method, path, parameters, responses,
+ * headers, and either manual flow steps or an auto-detected call graph for
+ * sequence diagram generation.
+ *
+ * @since 1.0.0
+ */
 public class EndpointModel {
     private String methodName;
     private String httpMethod;

@@ -1,5 +1,13 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a field within an {@link EntityModel}.
+ *
+ * <p>May be populated from {@code @JDocField} annotations or enriched
+ * with JPA {@code @Column} / {@code @Id} metadata.
+ *
+ * @since 1.0.0
+ */
 public class FieldModel {
     private String name;
     private String typeName;

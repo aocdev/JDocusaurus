@@ -5,6 +5,15 @@ import org.aocdev.jdocusaurus.processor.model.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates per-controller Markdown pages with endpoint documentation.
+ *
+ * <p>Output: {@code api/{kebab-case-name}.md} for each {@code @JDocClass}.
+ * Includes endpoint tables, parameter/response/header details, deprecation
+ * badges, and embedded Mermaid sequence diagrams.
+ *
+ * @since 1.0.0
+ */
 public class MarkdownGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();

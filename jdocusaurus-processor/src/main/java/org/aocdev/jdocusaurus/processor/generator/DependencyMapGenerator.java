@@ -6,6 +6,14 @@ import org.aocdev.jdocusaurus.processor.model.ProjectModel;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates integration documentation with a Mermaid dependency map.
+ *
+ * <p>Output: {@code integrations/index.md} with a service dependency
+ * diagram and a table of external services.
+ *
+ * @since 1.0.0
+ */
 public class DependencyMapGenerator implements Generator {
 
     private final MermaidGenerator mermaidGenerator = new MermaidGenerator();

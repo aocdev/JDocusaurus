@@ -16,6 +16,16 @@ import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Scans the annotation processing round environment for all {@code @JDoc*}
+ * annotations and builds a {@link ProjectModel}.
+ *
+ * <p>Handles {@code @Repeatable} container unwrapping and the
+ * {@code MirroredTypeException} pattern for {@code Class<?>} attributes.
+ *
+ * @see org.aocdev.jdocusaurus.processor.JDocusaurusProcessor
+ * @since 1.0.0
+ */
 public class AnnotationScanner {
 
     public ProjectModel scan(RoundEnvironment roundEnv) {

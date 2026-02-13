@@ -3,6 +3,17 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model representing a method call graph detected by JavaParser static analysis.
+ *
+ * <p>Built recursively by
+ * {@link org.aocdev.jdocusaurus.processor.scanner.JavaParserScanner}
+ * with depth limiting and cycle detection. Each edge represents a method call
+ * on an injected field, and may contain nested sub-calls forming a tree
+ * that maps to a Mermaid sequence diagram.
+ *
+ * @since 1.0.0
+ */
 public class CallGraphModel {
     private String sourceClass;
     private String sourceMethod;
@@ -21,6 +32,11 @@ public class CallGraphModel {
 
     public boolean isEmpty() { return edges.isEmpty(); }
 
+    /**
+     * A single method call edge in the call graph: source calls target.method(args).
+     *
+     * <p>May contain a condition (from if/else blocks) and recursive sub-calls.
+     */
     public static class CallEdge {
         private String sourceClass;
         private String targetField;

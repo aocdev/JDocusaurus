@@ -23,6 +23,26 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * Static analysis scanner that uses JavaParser to detect method call graphs.
+ *
+ * <p>Recursively analyzes method bodies to find calls on injected fields,
+ * building a {@link CallGraphModel} tree that is rendered as a Mermaid
+ * sequence diagram. Supports:
+ * <ul>
+ *   <li>Configurable recursion depth (default 5)</li>
+ *   <li>Cycle detection to prevent infinite loops</li>
+ *   <li>Conditional branch detection (if/else)</li>
+ *   <li>Heuristic async method call flagging (detects {@code Async},
+ *       {@code CompletableFuture}, {@code supplyAsync} patterns)</li>
+ * </ul>
+ *
+ * <p>Source files are located using the {@code jdoc.sourcePath} compiler option
+ * (semicolon-separated directories), falling back to common project layouts
+ * ({@code src/main/java}, {@code src/java}, {@code src}).
+ *
+ * @since 1.0.0
+ */
 public class JavaParserScanner {
 
     private final ProcessingEnvironment processingEnv;

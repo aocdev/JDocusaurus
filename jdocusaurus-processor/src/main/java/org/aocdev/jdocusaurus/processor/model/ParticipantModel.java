@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a participant (column) in a Mermaid sequence diagram.
+ *
+ * @since 1.0.0
+ */
 public class ParticipantModel {
     private String name;
     private String alias;

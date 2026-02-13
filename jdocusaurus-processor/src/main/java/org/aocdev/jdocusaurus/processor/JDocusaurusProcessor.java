@@ -15,6 +15,22 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Main annotation processor that orchestrates the JDocusaurus documentation pipeline.
+ *
+ * <p>Processing sequence:
+ * <ol>
+ *   <li>{@link org.aocdev.jdocusaurus.processor.scanner.AnnotationScanner} - scans all {@code @JDoc*} annotations</li>
+ *   <li>{@link org.aocdev.jdocusaurus.processor.scanner.JpaScanner} - enriches entities with JPA metadata</li>
+ *   <li>{@link org.aocdev.jdocusaurus.processor.scanner.JavaParserScanner} - detects method call graphs</li>
+ *   <li>All {@link org.aocdev.jdocusaurus.processor.generator.Generator} implementations - produce Markdown, Mermaid, and sidebar files</li>
+ * </ol>
+ *
+ * <p>Configured via {@code -Ajdoc.*} compiler options. Outputs a summary message
+ * with file counts at the end of processing.
+ *
+ * @since 1.0.0
+ */
 @SupportedAnnotationTypes({
         "org.aocdev.jdocusaurus.annotations.api.JDocClass",
         "org.aocdev.jdocusaurus.annotations.api.JDocEndpoint",
@@ -47,7 +63,8 @@ import java.util.*;
         "jdoc.projectName",
         "jdoc.projectDescription",
         "jdoc.autoFlowDepth",
-        "jdoc.autoFlowEnabled"
+        "jdoc.autoFlowEnabled",
+        "jdoc.sourcePath"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class JDocusaurusProcessor extends AbstractProcessor {
@@ -224,7 +241,7 @@ public class JDocusaurusProcessor extends AbstractProcessor {
 
     private void runCallGraphAnalysis(ProjectModel model, int maxDepth) {
         try {
-            JavaParserScanner javaParserScanner = new JavaParserScanner(processingEnv);
+            JavaParserScanner javaParserScanner = new JavaParserScanner(processingEnv, maxDepth);
 
             for (ClassModel classModel : model.getClasses()) {
                 for (EndpointModel endpoint : classModel.getEndpoints()) {

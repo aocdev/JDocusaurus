@@ -7,6 +7,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Generates business rules documentation grouped by severity.
+ *
+ * <p>Output: {@code business-rules/index.md} with a traceability table
+ * showing rule IDs, descriptions, locations, and cross-references.
+ *
+ * @since 1.0.0
+ */
 public class RuleMarkdownGenerator implements Generator {
 
     @Override

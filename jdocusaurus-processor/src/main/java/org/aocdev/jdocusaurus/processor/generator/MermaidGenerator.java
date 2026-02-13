@@ -4,6 +4,19 @@ import org.aocdev.jdocusaurus.processor.model.*;
 
 import java.util.*;
 
+/**
+ * Utility class that generates Mermaid diagram markup from model data.
+ *
+ * <p>Produces:
+ * <ul>
+ *   <li>Sequence diagrams from {@link CallGraphModel} or manual flow steps</li>
+ *   <li>ER diagrams (full and simplified) from entities and relations</li>
+ *   <li>Event flow graphs showing producers and consumers</li>
+ *   <li>Dependency maps for external service integrations</li>
+ * </ul>
+ *
+ * @since 1.0.0
+ */
 public class MermaidGenerator {
 
     public String generateSequenceDiagramFromCallGraph(CallGraphModel graph, String httpMethod,

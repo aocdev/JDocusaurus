@@ -6,6 +6,15 @@ import org.aocdev.jdocusaurus.processor.model.*;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates index pages for the Docusaurus documentation structure.
+ *
+ * <p>Output: {@code index.md} (global overview with summary diagrams),
+ * {@code api/index.md} (controller listing), and {@code flows/index.md}
+ * (flow listing).
+ *
+ * @since 1.0.0
+ */
 public class IndexGenerator implements Generator {
 
     private final JDocusaurusConfig config;

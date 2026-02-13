@@ -3,6 +3,25 @@ package org.aocdev.jdocusaurus.processor.config;
 import javax.annotation.processing.ProcessingEnvironment;
 import java.util.Map;
 
+/**
+ * Configuration holder for the JDocusaurus annotation processor.
+ *
+ * <p>Reads options from the compiler environment via {@code -Ajdoc.*}
+ * arguments passed to {@code maven-compiler-plugin}.
+ *
+ * <p><b>Available options:</b>
+ * <ul>
+ *   <li>{@code jdoc.outputDir} - Output directory (default: {@code "docs"})</li>
+ *   <li>{@code jdoc.fullStructure} - Generate sidebars.js (default: false)</li>
+ *   <li>{@code jdoc.projectName} - Project name for the index page</li>
+ *   <li>{@code jdoc.projectDescription} - Project description</li>
+ *   <li>{@code jdoc.autoFlowDepth} - JavaParser recursion depth (default: 5)</li>
+ *   <li>{@code jdoc.autoFlowEnabled} - Enable auto flow detection (default: true)</li>
+ *   <li>{@code jdoc.sourcePath} - Semicolon-separated source directories for JavaParser analysis</li>
+ * </ul>
+ *
+ * @since 1.0.0
+ */
 public class JDocusaurusConfig {
 
     private String outputDir = "docs";

@@ -6,6 +6,14 @@ import org.aocdev.jdocusaurus.processor.model.ProjectModel;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Generates configuration properties documentation.
+ *
+ * <p>Output: {@code config/index.md} with a properties table. Values
+ * marked as {@code secret = true} are masked with {@code ***}.
+ *
+ * @since 1.0.0
+ */
 public class ConfigMarkdownGenerator implements Generator {
 
     @Override

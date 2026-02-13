@@ -3,6 +3,14 @@ package org.aocdev.jdocusaurus.processor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Root model aggregating all documented elements collected during annotation processing.
+ *
+ * <p>Populated by {@link org.aocdev.jdocusaurus.processor.scanner.AnnotationScanner}
+ * and consumed by all generators to produce Markdown and Mermaid output.
+ *
+ * @since 1.0.0
+ */
 public class ProjectModel {
     private List<ClassModel> classes = new ArrayList<>();
     private List<FlowModel> allFlows = new ArrayList<>();

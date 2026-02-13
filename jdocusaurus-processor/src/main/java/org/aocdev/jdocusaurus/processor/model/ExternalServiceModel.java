@@ -1,5 +1,12 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a {@code @JDocExternalService}-annotated external dependency.
+ *
+ * <p>Used to generate the Mermaid dependency map and the integrations table.
+ *
+ * @since 1.0.0
+ */
 public class ExternalServiceModel {
     private String name;
     private String description;

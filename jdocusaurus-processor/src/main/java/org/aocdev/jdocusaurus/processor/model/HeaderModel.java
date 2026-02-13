@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing an HTTP header for an {@link EndpointModel}.
+ *
+ * @since 1.0.0
+ */
 public class HeaderModel {
     private String name;
     private String description;

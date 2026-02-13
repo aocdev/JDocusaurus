@@ -1,5 +1,13 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing a relationship between two entities in the ER diagram.
+ *
+ * <p>Provides {@code getMermaidRelation()} to convert the cardinality
+ * to Mermaid ER diagram notation.
+ *
+ * @since 1.0.0
+ */
 public class RelationModel {
     private String fieldName;
     private String targetEntityName;

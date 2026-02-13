@@ -1,5 +1,10 @@
 package org.aocdev.jdocusaurus.processor.model;
 
+/**
+ * Model representing an event consumer (a class/method that listens to an {@link EventModel}).
+ *
+ * @since 1.0.0
+ */
 public class ConsumerModel {
     private String className;
     private String methodName;
