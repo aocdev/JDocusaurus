@@ -1,4 +1,4 @@
-package org.aocdev.example.event;
+package org.aocdev.example.order.event;
 
 import org.aocdev.jdocusaurus.annotations.event.JDocEvent;
 
@@ -6,10 +6,10 @@ import org.aocdev.jdocusaurus.annotations.event.JDocEvent;
         name = "OrderPlacedEvent",
         description = "Evento emitido cuando se realiza un nuevo pedido",
         topic = "order.placed",
-        schema = "{ \"orderId\": \"long\", \"userId\": \"long\", \"totalAmount\": \"double\" }"
+        schema = "{ \"orderId\": \"long\", \"customerId\": \"long\", \"totalAmount\": \"double\" }"
 )
 public class OrderPlacedEvent {
     private Long orderId;
-    private Long userId;
+    private Long customerId;
     private Double totalAmount;
 }

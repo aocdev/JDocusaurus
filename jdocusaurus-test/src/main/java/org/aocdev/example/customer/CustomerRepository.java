@@ -1,6 +1,6 @@
-package org.aocdev.example;
+package org.aocdev.example.customer;
 
-public class UserRepository {
+public class CustomerRepository {
 
     public Object findAll() {
         return null;

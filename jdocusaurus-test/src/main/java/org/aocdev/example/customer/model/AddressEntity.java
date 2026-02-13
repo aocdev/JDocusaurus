@@ -1,4 +1,4 @@
-package org.aocdev.example.model;
+package org.aocdev.example.customer.model;
 
 import org.aocdev.jdocusaurus.annotations.data.JDocEntity;
 import org.aocdev.jdocusaurus.annotations.data.JDocField;
@@ -7,7 +7,7 @@ import org.aocdev.jdocusaurus.annotations.enums.RelationType;
 
 @JDocEntity(
         name = "Direccion",
-        description = "Direccion postal asociada a un usuario",
+        description = "Direccion postal asociada a un cliente",
         table = "addresses"
 )
 public class AddressEntity {
@@ -27,6 +27,6 @@ public class AddressEntity {
     @JDocField(description = "Pais", example = "Espana", nullable = false)
     private String country;
 
-    @JDocRelation(target = "Usuario", type = RelationType.MANY_TO_ONE, description = "Usuario propietario de la direccion")
-    private Object user;
+    @JDocRelation(target = "Cliente", type = RelationType.MANY_TO_ONE, description = "Cliente propietario de la direccion")
+    private Object customer;
 }

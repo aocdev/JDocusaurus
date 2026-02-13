@@ -1,4 +1,4 @@
-package org.aocdev.example;
+package org.aocdev.example.order;
 
 import org.aocdev.jdocusaurus.annotations.config.JDocConfig;
 import org.aocdev.jdocusaurus.annotations.enums.RuleSeverity;

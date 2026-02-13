@@ -1,4 +1,4 @@
-package org.aocdev.example.model;
+package org.aocdev.example.order.model;
 
 import org.aocdev.jdocusaurus.annotations.data.JDocEntity;
 import org.aocdev.jdocusaurus.annotations.data.JDocField;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @JDocEntity(
         name = "Pedido",
-        description = "Entidad que representa un pedido realizado por un usuario",
+        description = "Entidad que representa un pedido realizado por un cliente",
         table = "orders"
 )
 public class OrderEntity {
@@ -26,9 +26,9 @@ public class OrderEntity {
     @JDocField(description = "Estado del pedido: PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED", example = "PENDING", nullable = false)
     private String status;
 
-    @JDocRelation(target = "Usuario", type = RelationType.MANY_TO_ONE, description = "Usuario que realizo el pedido")
-    private Object user;
+    @JDocRelation(target = "Cliente", type = RelationType.MANY_TO_ONE, description = "Cliente que realizo el pedido")
+    private Object customer;
 
-    @JDocRelation(target = "OrderItem", type = RelationType.ONE_TO_MANY, description = "Lineas del pedido")
+    @JDocRelation(target = "LineaPedido", type = RelationType.ONE_TO_MANY, description = "Lineas del pedido")
     private List<Object> items;
 }
