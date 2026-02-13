@@ -46,7 +46,7 @@
                 <version>3.13.0</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Ajdoc.outputDir=${project.basedir}/docs</arg>
+                        <!--<arg>-Ajdoc.outputDir=${project.basedir}/docs</arg>-->
                         <arg>-Ajdoc.projectName=Online Store</arg>
                         <arg>-Ajdoc.projectDescription=Plataforma de tienda online con contextos de cliente, catalogo, pedidos e inventario</arg>
                         <arg>-Ajdoc.fullStructure=true</arg>
