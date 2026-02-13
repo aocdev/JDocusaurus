@@ -16,6 +16,13 @@
     <name>JDocusaurus Test</name>
     <description>Modulo de test para verificar la generacion de documentacion</description>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <maven.source.skip>true</maven.source.skip>
+        <gpg.skip>true</gpg.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.aocdev</groupId>
@@ -39,8 +46,9 @@
                 <version>3.13.0</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-Ajdoc.projectName=User Service</arg>
-                        <arg>-Ajdoc.projectDescription=Microservicio de gestion de usuarios</arg>
+                        <arg>-Ajdoc.outputDir=${project.basedir}/docs</arg>
+                        <arg>-Ajdoc.projectName=Online Store</arg>
+                        <arg>-Ajdoc.projectDescription=Plataforma de tienda online con contextos de cliente, catalogo, pedidos e inventario</arg>
                         <arg>-Ajdoc.fullStructure=true</arg>
                     </compilerArgs>
                 </configuration>
