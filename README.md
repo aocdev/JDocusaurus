@@ -1,5 +1,9 @@
 # JDocusaurus
 
+[![CI](https://github.com/aocdev/JDocusaurus/actions/workflows/ci.yml/badge.svg)](https://github.com/aocdev/JDocusaurus/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java](https://img.shields.io/badge/Java-21%2B-orange.svg)](https://adoptium.net/)
+
 A Java library for generating deep microservice documentation in [Docusaurus](https://docusaurus.io/) format, using annotations and compile-time processing (APT).
 
 Annotate your code with `@JDoc*` and automatically get: Markdown pages with endpoints, Mermaid sequence diagrams, ER diagrams, event maps, business rules, external integrations, configuration, and a ready-to-publish Docusaurus structure.
@@ -113,13 +117,13 @@ Markdown files are generated in `target/classes/docs/` (default path).
 
 ### REST API
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
-| `@JDocClass` | `TYPE` | Documents an API controller/class |
-| `@JDocEndpoint` | `METHOD` | Documents an HTTP endpoint |
-| `@JDocParam` | `PARAMETER` | Documents an endpoint parameter |
-| `@JDocResponse` | `METHOD` | Documents an HTTP response (repeatable) |
-| `@JDocHeader` | `METHOD` | Documents an HTTP header (repeatable) |
+| Annotation      | Target      | Description                             |
+|-----------------|-------------|-----------------------------------------|
+| `@JDocClass`    | `TYPE`      | Documents an API controller/class       |
+| `@JDocEndpoint` | `METHOD`    | Documents an HTTP endpoint              |
+| `@JDocParam`    | `PARAMETER` | Documents an endpoint parameter         |
+| `@JDocResponse` | `METHOD`    | Documents an HTTP response (repeatable) |
+| `@JDocHeader`   | `METHOD`    | Documents an HTTP header (repeatable)   |
 
 ```java
 @JDocClass(name = "User Controller", description = "...", basePath = "/api/v1/users")
@@ -137,11 +141,11 @@ public class UserController {
 
 ### Flows and Sequence Diagrams
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
-| `@JDocFlow` | `TYPE`, `METHOD` | Declares a business flow |
-| `@JDocFlowStep` | `METHOD` | Defines a step within a flow (repeatable) |
-| `@JDocParticipant` | `TYPE` | Declares a participant in sequence diagrams |
+| Annotation         | Target           | Description                                 |
+|--------------------|------------------|---------------------------------------------|
+| `@JDocFlow`        | `TYPE`, `METHOD` | Declares a business flow                    |
+| `@JDocFlowStep`    | `METHOD`         | Defines a step within a flow (repeatable)   |
+| `@JDocParticipant` | `TYPE`           | Declares a participant in sequence diagrams |
 
 Sequence diagrams are generated in two ways:
 
@@ -179,10 +183,10 @@ sequenceDiagram
 
 ### Data Model
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
-| `@JDocEntity` | `TYPE` | Documents a data entity |
-| `@JDocField` | `FIELD` | Documents an entity field |
+| Annotation      | Target  | Description                               |
+|-----------------|---------|-------------------------------------------|
+| `@JDocEntity`   | `TYPE`  | Documents a data entity                   |
+| `@JDocField`    | `FIELD` | Documents an entity field                 |
 | `@JDocRelation` | `FIELD` | Documents a relationship between entities |
 
 If the entity has JPA annotations (`@Entity`, `@Column`, `@Id`, `@OneToMany`...), JDocusaurus reads them as fallback without requiring JPA as a dependency. `@JDoc*` annotations always take priority.
@@ -220,9 +224,9 @@ erDiagram
 
 ### Events and Messaging
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
-| `@JDocEvent` | `TYPE` | Declares a domain event |
+| Annotation      | Target           | Description                          |
+|-----------------|------------------|--------------------------------------|
+| `@JDocEvent`    | `TYPE`           | Declares a domain event              |
 | `@JDocProduces` | `METHOD`, `TYPE` | Marks an event producer (repeatable) |
 | `@JDocConsumes` | `METHOD`, `TYPE` | Marks an event consumer (repeatable) |
 
@@ -257,8 +261,8 @@ graph LR
 
 ### Business Rules
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
+| Annotation          | Target           | Description                            |
+|---------------------|------------------|----------------------------------------|
 | `@JDocBusinessRule` | `METHOD`, `TYPE` | Documents a business rule (repeatable) |
 
 ```java
@@ -271,8 +275,8 @@ Rules are grouped by severity: `MANDATORY`, `WARNING`, `INFO`.
 
 ### External Integrations
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
+| Annotation             | Target          | Description                   |
+|------------------------|-----------------|-------------------------------|
 | `@JDocExternalService` | `TYPE`, `FIELD` | Documents an external service |
 
 ```java
@@ -290,8 +294,8 @@ Generates a Mermaid dependency map with the central service and its dependencies
 
 ### Configuration
 
-| Annotation | Target | Description |
-|-----------|--------|-------------|
+| Annotation    | Target          | Description                                     |
+|---------------|-----------------|-------------------------------------------------|
 | `@JDocConfig` | `FIELD`, `TYPE` | Documents a configuration property (repeatable) |
 
 ```java
@@ -306,14 +310,14 @@ Properties marked as `secret = true` hide their value with `***` in the generate
 
 Configurable via `-Ajdoc.*` in `maven-compiler-plugin`:
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `jdoc.outputDir` | Output directory (relative or absolute) | `docs` |
-| `jdoc.fullStructure` | Generates `sidebars.js` for Docusaurus | `false` |
-| `jdoc.projectName` | Project name (main page title) | (first controller name) |
-| `jdoc.projectDescription` | Project description | (empty) |
-| `jdoc.autoFlowDepth` | Maximum depth for JavaParser recursive analysis | `5` |
-| `jdoc.autoFlowEnabled` | Enables/disables automatic flow detection | `true` |
+| Option                    | Description                                     | Default                 |
+|---------------------------|-------------------------------------------------|-------------------------|
+| `jdoc.outputDir`          | Output directory (relative or absolute)         | `docs`                  |
+| `jdoc.fullStructure`      | Generates `sidebars.js` for Docusaurus          | `false`                 |
+| `jdoc.projectName`        | Project name (main page title)                  | (first controller name) |
+| `jdoc.projectDescription` | Project description                             | (empty)                 |
+| `jdoc.autoFlowDepth`      | Maximum depth for JavaParser recursive analysis | `5`                     |
+| `jdoc.autoFlowEnabled`    | Enables/disables automatic flow detection       | `true`                  |
 
 ## Generated Structure
 
@@ -418,3 +422,7 @@ Copyright 2026 aocdev (Albert Ortells)
 ```
 
 See [NOTICE](NOTICE) for third-party attributions.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
