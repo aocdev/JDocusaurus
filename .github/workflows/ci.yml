@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (Java ${{ matrix.java-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ '21' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
+          cache: maven
+
+      - name: Build and verify
+        run: ./mvnw clean verify --batch-mode --no-transfer-progress
+
+      - name: Check generated docs
+        run: |
+          if [ -d "jdocusaurus-test/target/classes/docs" ]; then
+            echo "Documentation generated successfully:"
+            find jdocusaurus-test/target/classes/docs -type f | sort
+          else
+            echo "ERROR: docs directory not found"
+            exit 1
+          fi
