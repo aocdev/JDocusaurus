@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <name>JDocusaurus Test</name>
-    <description>Modulo de test para verificar la generacion de documentacion</description>
+    <description>Test module for verifying documentation generation</description>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
