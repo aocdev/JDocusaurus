@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <name>JDocusaurus</name>
-    <description>Libreria de documentacion profunda de microservicios para Docusaurus</description>
+    <description>Deep documentation library for microservices with Docusaurus</description>
     <url>https://github.com/aocdev/jdocusaurus</url>
 
     <licenses>

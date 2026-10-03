@@ -14,7 +14,7 @@
     <packaging>jar</packaging>
 
     <name>JDocusaurus Processor</name>
-    <description>Annotation Processor y generadores de documentacion</description>
+    <description>Annotation processor and documentation generators</description>
 
     <dependencies>
         <dependency>
